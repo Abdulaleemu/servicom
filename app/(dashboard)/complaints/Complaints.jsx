@@ -49,9 +49,7 @@ const TABS = [
 
 
 const Complaints = () => {
-  const token = localStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const role = decodedToken.role
+ 
   const router = useRouter();
   const params = useParams();
   const id = params.id;
@@ -136,6 +134,10 @@ const Complaints = () => {
   
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+    const role = decodedToken.role
+    
     if (role == "Agency Admin" || 'Desk Officer') {
         fetchAgenciesByAgencies(currentPage)
       }else{
