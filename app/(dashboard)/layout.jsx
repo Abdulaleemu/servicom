@@ -2,7 +2,7 @@
 import MultiLevelSidebar from './Sidebar'
 import Header from './Header'
 import { useRouter } from 'next/navigation';
-import {useEffect} from 'react'
+import {useEffect,useState} from 'react'
 import jwtDecode from 'jwt-decode';
 
 
@@ -11,16 +11,20 @@ import jwtDecode from 'jwt-decode';
 
 export default function Layout({ children }) {
     const router = useRouter()
-    let storedToken =''
+    const [storedToken, setStoredToken] = useState(null)
+
+    
 
     useEffect(() => {
-     storedToken = localStorage.getItem("token");
-      
+     const storedToken = localStorage.getItem("token");
+      if (!storedToken){
+        router.replace("/login");
+      }
       }, [])
   
 
 
-    if (storedToken != null ) {
+   
         return (
         < >
         <MultiLevelSidebar/>
@@ -29,8 +33,6 @@ export default function Layout({ children }) {
         </>
       
     )
-} else {
-    router.replace("/login");
-  }
+
   }
   
