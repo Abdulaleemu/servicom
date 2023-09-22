@@ -7,14 +7,18 @@ import { BellIcon } from '@heroicons/react/24/solid';
 
 export default function Header() {
 const [user, setUser]=useState();
-const token = localStorage.getItem('token')
-const decoded = jwtDecode(token)
+let  token = ''
+
  
  useEffect(() => {
+ token =  localStorage.getItem('token')
+ const decoded = jwtDecode(token)
     if (decoded){
         setUser(decoded)
      }
   },[token]);
+  
+  console.log(token)
   return (
     <div className=' w-full md:w-[calc(100vw-20rem)] h-[7rem]  absolute top-0 right-0 p-4 shadow-sm'>
         <div className='w-full flex items-center justify-between p-2'>

@@ -40,8 +40,8 @@ export default function MultiLevelSidebar() {
  
 
   const handleLogout = ()=>{
-    router.replace('/login')
-    localStorage.removeItem('token');
+  localStorage.removeItem('token')
+   router.replace('/login')
     
   } 
   
@@ -49,16 +49,16 @@ export default function MultiLevelSidebar() {
     <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 hidden md:flex ">
       <div className="mb-2 p-4">
         <Typography variant="h5" color="blue-gray">
-          <Image src='/img/logo.png' height={150} width={150} className="p-2 mb-6"/>
+          <Image src='/img/logo.png' height={150} width={150} alt="LOGO" className="p-2 mb-6"/>
           <hr className=""></hr>
         </Typography>
       </div>
       <List>
-        <ListItem onClick={()=>router.push(`/home`)}>
+        <ListItem  >
         <ListItemPrefix>
             <PresentationChartBarIcon className="h-5 w-5" />
           </ListItemPrefix>
-          Dashboard
+          <Link href='/home'>Dashboard</Link>
           <ListItemSuffix>
             {/* <Chip value="14" size="sm" variant="ghost" color="blue-gray" className="rounded-full" /> */}
           </ListItemSuffix>
@@ -68,6 +68,12 @@ export default function MultiLevelSidebar() {
             <BuildingOffice2Icon className="h-5 w-5" />
           </ListItemPrefix>
          Agencies
+        </ListItem>
+        <ListItem onClick={()=>router.push(`/outlets`)}>
+          <ListItemPrefix>
+            <BuildingOffice2Icon className="h-5 w-5" />
+          </ListItemPrefix>
+         Outlets
         </ListItem>
         <ListItem onClick={()=>router.push(`/complaints`)}>
           <ListItemPrefix>

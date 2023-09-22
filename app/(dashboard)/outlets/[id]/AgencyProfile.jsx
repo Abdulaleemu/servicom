@@ -4,8 +4,7 @@ import React, { useState, useEffect } from "react";
 import jwtDecode from 'jwt-decode';
 import axios from "axios";
 import Image from "next/image";
-import { useParams, useRouter } from 'next/navigation'
-import QrCodeDownload from './qr'
+import { useParams,useSearchParams } from 'next/navigation'
 import {
   Button,
   Dialog,
@@ -15,15 +14,13 @@ import {
   Input,
   Textarea,
 } from "@material-tailwind/react";
-import Loading from '../../../../components/Loading';
-import Link from 'next/link';
 
 
 export default function AgencyProfile() {
+ 
   const token = localStorage.getItem('token')
   const decodedToken = jwtDecode(token)
   const params = useParams();
-  const router = useRouter()
   const id = params.id
   const [agency, setAgency] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -40,28 +37,21 @@ export default function AgencyProfile() {
   const [isAdministrator, setIsAdminisrator] = useState(false)
   const [isAgencyAdmin, setIsAgencyAdmin] = useState(false)
   const [isDeskOfficer, setIsDeskOfficer] = useState(false)
-   const authToken = `Bearer ${token}`;
   const [agencyData, setAgencyData] = useState({
     stateId: 0,
     isHeadquarters:false,
     hqOutletStatus: '',
     name: '',
-    abbreviation: '',
-    address: '',
-    phoneNumber: '',
-    about: '',
-    websiteUrl: '',
-    logoUrl: '',
-    rating: 0,
+
   });
-  const [openQr, setOpenQr] = useState(false);
+
 
 
   // Function to handle form submission
   const handleUpdateAgency = async () => {
     try {
       // Define the API endpoint and authorization token
-      const apiUrl = `${process.env.NEXT_BASEURL}Agency/updateAgency`;
+      const apiUrl = `${process.env.NEXT_BASEURL}updateOutlet`;
       const authToken = `Bearer ${token}`; // Replace with your actual authorization token
 
       // Send a PUT request to update the agency
@@ -88,11 +78,6 @@ export default function AgencyProfile() {
     });
   };
 
-
-
-
-
-
 // new update 
 
 
@@ -114,7 +99,7 @@ export default function AgencyProfile() {
   const fetchAgency = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_BASEURL}Agency/${id}`
+        `${process.env.NEXT_BASEURL}Outlet/${id}`
       );
       setAgency(response.data.data);
       console.log(response.data.data);
@@ -125,38 +110,15 @@ export default function AgencyProfile() {
 
   const fetchAgencies = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_BASEURL}Agency`);
+      const response = await axios.get(`${process.env.NEXT_BASEURL}Outlet`);
       setAgencies(response.data.data);
       console.log("from agenciesss", response.data.data);
     } catch (error) {
       console.error("Failed to fetch agency:", error.message);
     }
   };
-//  handle generate email
-const generateAdminUrl = async () => {
-  try {
-    // Replace 'yourAuthToken' with the actual authentication token
+
   
-
-    const response = await axios.get(
-      `${process.env.NEXT_BASEURL}Auth/GenerateAdminUrl?agencyId=${agency.id}&userEmail=${email}`,
-      {
-        headers: {
-          Authorization: authToken, // Include the Bearer token
-        },
-      }
-    );
-   
-    console.log('email sent', response);
-  } catch (error) {
-    console.error("Failed to fetch agency:", error.message);
-  }
-};;
-
-
-  const routeToOutlets = ()=>{
-    router.push('/outlets')
-  }
 
 
   useEffect(() => {
@@ -175,7 +137,10 @@ const generateAdminUrl = async () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
- 
+  useEffect(() => {
+    fetchAgencies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAgencySelect = (agencyId) => {
     setSelectedAgencyId(agencyId);
@@ -185,65 +150,25 @@ const generateAdminUrl = async () => {
     agency.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-
-
-  
-  async function fetchQrCodeImage() {
-    try {
-      const response = await fetch(`${process.env.NEXT_BASEURL}QrCode/quickchart?AgencyId=${agency.id}&imageWidth=500`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      console.log('from qr', response);
-      return response.blob() // Get the response as a Blob (file)
-        ;
-    } catch (error) {
-      console.error('There was a problem with the fetch operation:', error);
-      throw error; // Rethrow the error to handle it elsewhere if needed
-    }
+  if (!agency) {
+    return (
+      <Main>
+        <div className='text-center'>Loading...</div>
+      </Main>
+    );
   }
   
-  const handleQrModel = ()=>{
-    fetchQrCodeImage()
-    setOpenQr(!openQr)
-  }
 
-
-  if(!agency){
-    return <Loading />
-  }
-
-  
+  console.log('decoded', isAdministrator)
   return (
     <Main >
-    <Image src={agency?.hqOutletStatus}
+     <Image src={agency?.hqOutletStatus}
         height={100}
         width={100}
         alt='Outlet'/>
       <div className="flex items-center justify-between border-b border-1 border-gray-600 p-2 mb-2">
         <div className="text-3xl font-bold mb-4">{agency.name}</div>
         <div className="flex space-x-4">
-      <Link href={
-        {
-          pathname: '/outlets',
-          query: {
-            id: agency.id
-          }
-        }
-      }>
-      <Button
-            // onClick={ routeToOutlets }
-            disabled={!isAdministrator}
-            hidden={!isAdministrator}
-            color="dark"
-            pill
-            size="xs"
-          >
-            {" "}
-            Outlets
-          </Button>
-      </Link>
-
           <Button
             onClick={() => propsUpdate.setUpdateOpenModal("default")}
             disabled={!isAgencyAdmin && !isAdministrator}
@@ -254,37 +179,7 @@ const generateAdminUrl = async () => {
             {" "}
             Update
           </Button>
-          <Button
-            onClick={() => setOpenQr('default')}
-            color="dark"
-            pill
-            size="xs"
-          >
-            {" "}
-          QrCode
-          </Button>
-          <Button
-            onClick={() => propDesk.setOpenAddDeskModal("default")}
-            disabled={!isAgencyAdmin && !isAdministrator}
-            hidden={!isAgencyAdmin && !isAdministrator}
-            color="dark"
-            pill
-            size="xs"
-          >
-            {" "}
-            Generate Desk Officer
-          </Button>
-          <Button
-            onClick={() => props.setOpenModal('default')}
-            disabled={!isAdministrator}
-            hidden={!isAdministrator}
-            color="dark"
-            pill
-            size="xs"
-          >
-            {" "}
-            Generate Admin Url
-          </Button>
+       
         </div>
       </div>
       <div className="flex mb-2">
@@ -329,33 +224,44 @@ const generateAdminUrl = async () => {
       <Dialog
         open={openModal} handler={()=>handleOpenModal(decoded.role)}
       >
-        <DialogHeader>Generate Agency Admin Link For {agency.abbreviation}</DialogHeader>
+        <DialogHeader>Generate Agency Admin Link</DialogHeader>
         <DialogBody>
           <div className="space-y-6">
             <div>
               <div className="flex gap-2 items-center">
-                {/* <Input
+                <Input
                   label="Search Agency"
                   type="text"
-                  value={agency.name}
+                  value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                /> */}
-                
+                />
                 <Input
                   label="Email"
                   type="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
 
-     
+              <ul>
+                {filteredAgencies?.map((agency) => (
+                  <li
+                    className="cursor-pointer border-b p-2 font-semibold"
+                    key={agency.id}
+                    onClick={() => handleAgencySelect(agency.id)}
+                  >
+                    {agency.name}
+                  </li>
+                ))}
+              </ul>
+              {selectedAgencyId && (
+                <p>Selected Agency ID: {selectedAgencyId}</p>
+              )}
             </div>
           </div>
         </DialogBody>
         <DialogFooter className='flex space-x-2'>
-          <Button onClick={ generateAdminUrl}>
+          <Button onClick={() => props.setOpenModal(undefined)}>
             Send Link
           </Button>
           <Button color="gray" onClick={() => props.setOpenModal(undefined)}>
@@ -410,41 +316,16 @@ const generateAdminUrl = async () => {
       <Input type="text" name="hqOutletStatus" label='HQ outlet Status'  value={agencyData.hqOutletStatus} onChange={handleInputChange} />
       <Input type="text" label='Agency Name' name="name"  value={agencyData.name} onChange={handleInputChange} />
       <Input type="text" label='Abbrivation' name="abbreviation"  value={agencyData.abbreviation} onChange={handleInputChange} />
-      <Input type="text" label='Address' name="address" value={agencyData.address} onChange={handleInputChange} />
-      <Input type="text" label='Phone Number' name="phoneNumber"  value={agencyData.phoneNumber} onChange={handleInputChange} />
-      <Input type="text" label='About' name="about"  value={agencyData.about} onChange={handleInputChange} />
-      <Input type="text" label='Website Url' name="websiteUrl"  value={agencyData.websiteUrl} onChange={handleInputChange} />
-      <Input type="text" label='Logo' name="logoUrl"  value={agencyData.logoUrl} onChange={handleInputChange} />
+    
       </div>
           </div>
         </DialogBody>
         <DialogFooter className='flex space-x-3'>
           <Button onClick={handleUpdateAgency} disabled={isUpdating}>
-            {isUpdating ? "Updating..." : "Update Agency"}
+            {isUpdating ? "Updating..." : "Update Outlet"}
           </Button>
           <Button color="gray" onClick={() => setUpdateOpenModal(!openUpdateModal)}>
             Cancel
-          </Button>
-        </DialogFooter>
-      </Dialog>
-     {/* qrmodal  */}
-
-      <Dialog open={openQr} handler={handleQrModel}>
-        <DialogHeader>Its a simple dialog.</DialogHeader>
-        <DialogBody divider>
-       < QrCodeDownload id={agency.id}/>
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            variant="text"
-            color="red"
-            onClick={()=>setOpenQr(!openQr)}
-            className="mr-1"
-          >
-            <span>Cancel</span>
-          </Button>
-          <Button variant="gradient" color="green" onClick={()=>setOpenQr(!openQr)}>
-            <span>Confirm</span>
           </Button>
         </DialogFooter>
       </Dialog>

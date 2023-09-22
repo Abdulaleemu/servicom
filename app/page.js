@@ -1,5 +1,19 @@
-import Image from "next/image";
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return <h1></h1>;
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token == null) {
+      router.replace("/login");
+    }else{
+      router.replace('/home')
+    }
+  });
+
+  return <></>;
 }

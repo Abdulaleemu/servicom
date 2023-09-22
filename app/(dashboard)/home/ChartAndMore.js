@@ -8,7 +8,7 @@ import { Rating, Typography } from "@material-tailwind/react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
-export default function ({
+export default function ChartAndMore({
   topRated,
   bottomRated,
   reports,
@@ -44,21 +44,29 @@ export default function ({
   };
 
   return (
-    <div className="p-4 h-full w-full flex items-center space-x-2">
+    <div className="p-4 h-full w-full flex items-start space-x-2 bg-[#F8FAFB]">
       {/* charts */}
-      <div className="border w-2/3 h-4/5 flex items-center justify-center shadow-md ">
-        <Doughnut data={chartData} />
+      <div className="w-2/3 h-full">
+        <div className=" w-full h-3/5 flex items-center justify-center  bg-white ">
+          <Doughnut data={chartData} />
+        </div>
+        <div className="w-full h-full border bg-white mt-8 p-4">
+          <h1 className="font-md text-xl">Report Tag Overview</h1>
+        </div>
       </div>
       {/* top and least rating */}
-      <div className="h-4/5 w-1/3 flex flex-col ">
-        <div className="w-full h-1/2 shadow-md">
+      <div className="h-4/5 w-1/3 flex flex-col bg-white ">
+        <div className="w-full h-1/2 ">
           <div className="flex items-center justify-center p-2">
             <ArrowUpCircleIcon className="h-6 text-green-600" />
             <h1 className="text-xl font-semibold">Top Rated Agencies </h1>
           </div>
           <div className="p-2">
             {topRated?.map((agency) => (
-              <div className="flex items-center justify-between space-y-2 border-b">
+              <div
+                key={agency.id}
+                className="flex items-center justify-between space-y-2 border-b"
+              >
                 <h1>{agency?.agencyName}</h1>
                 <Rating value={parseInt(agency?.rating)} />
               </div>
@@ -66,14 +74,17 @@ export default function ({
           </div>
         </div>
         <hr></hr>
-        <div className="w-full h-1/2 shadow-md">
+        <div className="w-full h-1/2 ">
           <div className="flex items-center justify-center p-2">
             <ArrowDownCircleIcon className="h-6 text-red-600" />
             <h1 className="text-xl font-semibold">Bottom Rated Agencies </h1>
           </div>
           <div className="p-2">
             {bottomRated?.map((agency) => (
-              <div className="flex items-center justify-between space-y-2 border-b">
+              <div
+                key={agency.id}
+                className="flex items-center justify-between space-y-2 border-b"
+              >
                 <h1>{agency?.agencyName}</h1>
                 <Rating value={parseInt(agency?.rating)} />
               </div>

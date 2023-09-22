@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react'
 import Stats from './Stats'
 import StatsItem from './StatsItem';
 import ChartAndMore from './ChartAndMore'
+import Loading from '../../../components/Loading';
+import Main from '../Main'
+import { FlagIcon } from '@heroicons/react/24/solid';
 
 
 
@@ -35,7 +38,7 @@ async function fetchDataWithToken(token) {
 
 export default function Dashboard() {
 
-  const [data, setData] = useState("");
+  const [data, setData] = useState('');
   const token = localStorage.getItem("token");
   
   useEffect(() => {
@@ -48,20 +51,26 @@ export default function Dashboard() {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, []);
+  }, [token]);
 
-  return (<div className='w-full md:w-[calc(100vw-20rem)] flex-col h-[calc(100vh-22rem)] rounded-md absolute top-[9rem] md:ml-[20rem]  shadow-gray-400'>
-    <div className='w-full md:w-[calc(100vw-20rem)] flex  h-[10rem] rounded-md relative  shadow-gray-400'>
-     <div className='mr-auto ml-auto mt-auto mb-auto flex flex-row space-x-2 items-start justify-around w-2/3 shadow-sm'>
+  if(!data){
+    return <Loading/>
+  }
+  return (<div className='w-full md:w-[calc(100vw-20rem)] flex-col h-[calc(100vh-22rem)] rounded-md absolute top-[9rem] md:ml-[20rem] '>
+    <div className='w-full md:w-[calc(100vw-20rem)] flex  h-[10rem] rounded-md relative bg-white'>
+     <div className='mr-auto ml-auto mt-auto mb-auto flex flex-row space-x-2 items-start justify-around w-2/3 '>
         <StatsItem title='Total Reports' reports={data?.totalReports}/>
-        <StatsItem title='Total Reports' main={data?.resolvedAsString} details={data?.resolvedPercentage}  />
-        <StatsItem title='Total Reports' main={data?.unResolvedAsString} details={data?.unResolvedPercentage}/>
+        <StatsItem title='Resolved Reports' main={data?.resolvedAsString} details={data?.resolvedPercentage}  />
+        <StatsItem title='Unresolved Reports' main={data?.unResolvedAsString} details={data?.unResolvedPercentage}/>
     </div>
     </div>
     {/* chart and toprated */}
-    <div className='bg-slate-300 mt-4 h-full'>
+    <div className='bg-white mt-4 h-full'>
+  
    
-      <ChartAndMore topRated={data?.topRatedAgencies} bottomRated={data?.bottomRatedAgencies} reports={data?.totalReports} resolved={data?.resolvedReports} unresolved={data?.unResolvedReports}/> 
+   <ChartAndMore topRated={data?.topRatedAgencies} bottomRated={data?.bottomRatedAgencies} reports={data?.totalReports} resolved={data?.resolvedReports} unresolved={data?.unResolvedReports}/> 
+  
+     
     </div>
     </div>
   )

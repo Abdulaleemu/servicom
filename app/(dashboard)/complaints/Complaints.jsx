@@ -1,104 +1,73 @@
-'use client'
-import Main from '../Main'
-import Loading from '../../../components/Loading'
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import {
-  Card,
-  CardHeader,
-  Input,
-  Typography,
-  Button,
-  CardBody,
-  Chip,
-  CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
-  Avatar,
-  IconButton,
-  Tooltip,
-  Rating, 
-} from "@material-tailwind/react";
+"use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Loading from '../../../components/Loading'
+import Main from '../Main'
+import {
+    Card,
+    CardHeader,
+    Input,
+    Typography,
+    Button,
+    CardBody,
+    Chip,
+    CardFooter,
+    Tabs,
+    TabsHeader,
+    Tab,
+    Avatar,
+    IconButton,
+    Tooltip,
+    Select,
+    Option,
+  } from "@material-tailwind/react";
 import jwtDecode from "jwt-decode";
- 
-const TABS = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "Headquaters",
-    value: "headquaters",
-  },
-  {
-    label: "Branches",
-    value: "Branches",
-  },
-];
- 
+import { useParams, useRouter } from "next/navigation";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 
-export default function Agencies() {
-    const [isLoading, setIsLoading] = useState(false);
-    const token = localStorage.getItem("token");
+const TABS = [
+
+    {
+      label: "All",
+      value: "all",
+    },
+    {
+        label: "Pending",
+        value: "pending",
+      },
+    {
+      label: "Resolved",
+      value: "resolved",
+    },
+    {
+      label: "Unresolved",
+      value: "unresolved",
+    },
+ 
+  ];
+
+
+const Complaints = () => {
+  const token = localStorage.getItem("token");
   const decodedToken = jwtDecode(token);
-  const role = decodedToken.role;
-  const [agencies, setAgencies] = useState("");
+  const role = decodedToken.role
+  const router = useRouter();
+  const params = useParams();
+  const id = params.id;
+  const [agencies, setAgencies] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const router = useRouter();
-
   const [filters, setFilters] = useState({
-    state: "",
+    id: "",
+    status: "",
+    agencyName: "",
     name: "",
-    complaintId: "",
-    agencyId: "",
   });
-
-
-  const fetchAgencies = async (page) => {
-    try {
-      setIsLoading(true);
-      const { state, name, complaintId, agencyId } = filters;
-      const response = await axios.get(`${process.env.NEXT_BASEURL}Agency/paged`, {
-        params: {
-          PageNumber: page,
-          PageSize: 10,
-          state,
-          name,
-          complaintId,
-          agencyId : 0,
-        },
-      });
-      setAgencies(response.data.data);
-      setTotalPages(response.data.totalPages);
-      setIsLoading(false);
-      console.log("from response", response.data.data);
-    } catch (error) {
-      console.error("Failed to fetch agencies:", error.message);
-      setIsLoading(true);
-    }
-  };
-  const handleFilterChange = (event, filterKey) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [filterKey]: event.target.value,
-    }));
-  };
-  
-  useEffect(() => {
-    if (role == "Agency Admin") {
-      router.push(`/agencies/${decodedToken.AgencyID}`);
-    }
-    fetchAgencies(currentPage);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, filters]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLink = (id)=>{
-    router.push(`/agencies/${id}`)
+    router.push(`/complaints/${id}`)
   }
  
   const handlePrevious = ()=>{
@@ -116,39 +85,110 @@ export default function Agencies() {
     }else if(currentPage < totalPages){
         setCurrentPage(currentPage + 1)
     }
- 
 }
 
-if(!agencies){
-  return <Loading/>
-}
+  
+  const fetchAgencies = async (page) => {
+    try {
+      setIsLoading(true);
+      const { status, agencyName, name, id } = filters;
+      const response = await axios.get(`${process.env.NEXT_BASEURL}Complaint/paged`, {
+        params: {
+          PageNumber: page,
+          PageSize: 10,
+          status,
+          name,
+          agencyName,
+        },
+      });
+      setAgencies(response.data.data);
+      setTotalPages(response.data.data.totalPages);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch agencies:", error.message);
+      setIsLoading(false);
+    }
+  };
+
+
+  const fetchAgenciesByAgencies = async (page) => {
+    try {
+      setIsLoading(true);
+      const { status, agencyName, name, id } = filters;
+      const response = await axios.get(`${process.env.NEXT_BASEURL}Complaint/paged?AgencyId=${decodedToken.AgencyID}`, {
+        params: {
+          PageNumber: page,
+          PageSize: 10,
+          status,
+          name,
+          agencyName,
+        },
+      });
+      setAgencies(response.data.data);
+      setTotalPages(response.data.data.totalPages);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch agencies:", error.message);
+      setIsLoading(false);
+    }
+  };
+
+  
+
+  useEffect(() => {
+    if (role == "Agency Admin" || 'Desk Officer') {
+        fetchAgenciesByAgencies(currentPage)
+      }else{
+    fetchAgencies(currentPage);
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, filters]);
+
+
+  
+
+  const handleFilterChange = (event, filterKey) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [filterKey]: event.target.value,
+    }));
+  };
+
+
+  if(!agencies){
+    return <Loading/>
+  }
+
   return (
-    <Main heading='Agencies'>
-        <Card className="h-full w-full">
+    <Main heading='Complaints'>
+   
+   <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row md:gap-0">
-          {/* <Tabs value="all" className="w-full md:w-max flex items-center mb-4">
+          <Tabs value="all" className="w-full md:w-max flex items-center mb-4">
             <TabsHeader>
-              {TABS.map(({ label, value }) => (
+              {TABS?.map(({ label, value }) => (
                 <Tab key={value} value={value}>
                   &nbsp;&nbsp;{label}&nbsp;&nbsp;
                 </Tab>
               ))}
             </TabsHeader>
-          </Tabs> */}
+          </Tabs>
           <div className="w-full md:w-[40vw] mb-4 flex space-x-2">
             <Input
-              label="Agency Name"
+              label="Complainers Name"
               value={filters.name}
              onChange={(e) => handleFilterChange(e, "name")}
               icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             />
               <Input
-              label="Search"
+              label="Agency Name"
+              onChange={(e) => handleFilterChange(e, "agencyName")}
               icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             />
               <Input
-              label="Search"
+              label="Status"
+              onChange={(e) => handleFilterChange(e, "status")}
               icon={<MagnifyingGlassIcon className="h-5 w-5" />}
             />
           </div>
@@ -168,7 +208,7 @@ if(!agencies){
                     color="blue-gray"
                     className="font-normal leading-none opacity-70"
                   >
-                    Agency Name
+                    Agency
                   </Typography>
                 </th>
               
@@ -180,7 +220,7 @@ if(!agencies){
                     color="blue-gray"
                     className="font-normal leading-none opacity-70"
                   >
-                    Address
+                    Complainer
                   </Typography>
                 </th>
                 <th
@@ -191,7 +231,7 @@ if(!agencies){
                     color="blue-gray"
                     className="font-normal leading-none opacity-70"
                   >
-                    Phone Number
+                    Complain
                   </Typography>
                 </th>
                 <th
@@ -202,7 +242,7 @@ if(!agencies){
                     color="blue-gray"
                     className="font-normal leading-none opacity-70"
                   >
-                    Website
+                    Status
                   </Typography>
                 </th>
                 <th
@@ -220,8 +260,8 @@ if(!agencies){
         
           </thead>
           <tbody>
-            {agencies && agencies?.map(
-              ({ id,abbreviation, logoUrl, name, phoneNumber, websiteUrl, rating,address }, index) => {
+            {agencies && agencies.map(
+              ({ id, name, agencyName, body, rating,status }, index) => {
                 const isLast = index === agencies.length - 1;
                 const classes = isLast
                   ? "p-4"
@@ -230,34 +270,21 @@ if(!agencies){
                 return (
                     
                   <tr key={id} className='hover:bg-blue-gray-300 cursor-pointer'onClick={()=>handleLink(id)}>
-                    <td className={classes}>
-                    <div className="flex items-center gap-3">
-                        <Avatar src={logoUrl} alt={abbreviation} size="sm" />
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {abbreviation}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {name}
-                          </Typography>
-                        </div>
-                      </div>
-                    </td>
-                    <td className={classes}>
+<td className={classes}>
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {address.slice(0,40)}
+                        {agencyName}
+                      </Typography>
+                    </td><td className={classes}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {name}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -266,7 +293,7 @@ if(!agencies){
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {phoneNumber}
+                        {body.slice(0,40)}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -275,18 +302,18 @@ if(!agencies){
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {websiteUrl}
+                        {status}
                       </Typography>
                     </td>
+                
                     <td className={classes}>
-                      {/* <Typography
+                      <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
                       >
                         {rating}
-                      </Typography> */}
-                      <Rating value={parseInt(rating)} />
+                      </Typography>
                     </td>
                    
                   </tr>
@@ -312,5 +339,7 @@ if(!agencies){
       </CardFooter>
     </Card>
     </Main>
-  )
-}
+  );
+};
+
+export default Complaints;

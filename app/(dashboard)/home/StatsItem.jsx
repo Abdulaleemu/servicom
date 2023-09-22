@@ -4,9 +4,9 @@ import { FlagIcon } from '@heroicons/react/24/solid'
 
 export default function StatsItem({title, main, details,reports}) {
   return (
-    <div className='flex flex-col  items-center '>
+    <div className='flex flex-col  items-center bg-white '>
        <div className='flex items-center gap-2'>
-       <FlagIcon className='h-6 w-6 text-red-500 '/>
+       <FlagIcon className='h-6 w-6 hidden lg:flex text-red-500 '/>
         <h1 className='text-xl font-semibold  '>{title}</h1>
        </div>
        <h1 className='text-sm '>{main}</h1>
