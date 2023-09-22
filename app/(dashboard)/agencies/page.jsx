@@ -42,6 +42,7 @@ const TABS = [
  
 
 export default function Agencies() {
+
     const [isLoading, setIsLoading] = useState(false);
  
   const [agencies, setAgencies] = useState("");
@@ -88,9 +89,11 @@ export default function Agencies() {
   };
   
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    let token
+    token = localStorage.getItem('token')
     const decodedToken = jwtDecode(token);
     const role = decodedToken.role;
+
 
     if (role == "Agency Admin") {
       router.push(`/agencies/${decodedToken.AgencyID}`);
