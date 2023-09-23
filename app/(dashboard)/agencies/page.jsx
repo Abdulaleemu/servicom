@@ -44,6 +44,7 @@ const TABS = [
 export default function Agencies() {
 
     const [isLoading, setIsLoading] = useState(false);
+    const localstorage = require('serviceworker-localstorage')
  
   const [agencies, setAgencies] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,8 +90,8 @@ export default function Agencies() {
   };
   
   useEffect(() => {
-    let token
-    token = localStorage.getItem('token')
+    let token 
+    token = localstorage.getItem('token')
     const decodedToken = jwtDecode(token);
     const role = decodedToken.role;
 
