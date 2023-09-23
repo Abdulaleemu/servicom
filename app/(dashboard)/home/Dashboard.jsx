@@ -39,10 +39,14 @@ async function fetchDataWithToken(token) {
 export default function Dashboard() {
 
   const [data, setData] = useState('');
-  const token = localStorage.getItem("token");
+  // const token = localStorage.getItem("token");
   
   useEffect(() => {
-    // console.log("from dashboard", token);
+    let token = null;
+    if (typeof localStorage !== 'undefined') {
+    token = localStorage.getItem('token');
+  }
+    
     fetchDataWithToken(token)
       .then((data) => {
         console.log("Data:", data.data);
@@ -51,7 +55,7 @@ export default function Dashboard() {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [token]);
+  }, []);
 
   if(!data){
     return <Loading/>
