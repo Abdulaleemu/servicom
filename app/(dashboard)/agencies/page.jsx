@@ -160,7 +160,7 @@ if(!agencies){
             <tr>
               
                 <th
-                  className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+                  className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 "
                 >
                   <Typography
                     variant="h5"

@@ -46,7 +46,7 @@ export default function MultiLevelSidebar() {
   } 
   
   return (
-    <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 hidden md:flex ">
+    <Card className="h-[100vh] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 hidden md:flex ">
       <div className="mb-2 p-4">
         <Typography variant="h5" color="blue-gray">
           <Image src='/img/logo.png' height={150} width={150} alt="LOGO" className="p-2 mb-6"/>

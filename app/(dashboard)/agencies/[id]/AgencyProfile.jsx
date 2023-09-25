@@ -40,6 +40,8 @@ export default function AgencyProfile() {
   const [isAdministrator, setIsAdminisrator] = useState(false)
   const [isAgencyAdmin, setIsAgencyAdmin] = useState(false)
   const [isDeskOfficer, setIsDeskOfficer] = useState(false)
+  const [states, setStates] = useState([])
+  const [stateId, setStateId] = useState();
    const authToken = `Bearer ${token}`;
   const [agencyData, setAgencyData] = useState({
     stateId: 0,
@@ -151,11 +153,49 @@ const generateAdminUrl = async () => {
   } catch (error) {
     console.error("Failed to fetch agency:", error.message);
   }
+};
+
+//  handle generate desk email
+const generateDeskUrl = async () => {
+  try {
+    // Replace 'yourAuthToken' with the actual authentication token
+  
+
+    const response = await axios.get(
+      `${process.env.NEXT_BASEURL}Auth/GenerateDeskOfficerUrl?stateId=${stateId}&userEmail=${email}`,
+      {
+        headers: {
+          Authorization: authToken, // Include the Bearer token
+        },
+      }
+    );
+   
+    console.log('email sent', response);
+  } catch (error) {
+    console.error("Failed to fetch agency:", error.message);
+  }
 };;
 
 
   const routeToOutlets = ()=>{
     router.push('/outlets')
+  }
+
+  const fetchStates = ()=>{
+      // Fetch the states from the API endpoint when the component mounts
+      fetch(`${process.env.NEXT_BASEURL}State`) // Replace with your API endpoint URL
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setStates(data.data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   }
 
 
@@ -172,6 +212,7 @@ const generateAdminUrl = async () => {
     }
     fetchAgency();
     fetchAgencies();
+    fetchStates()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -368,27 +409,49 @@ const generateAdminUrl = async () => {
     <Dialog
         open={openAddDeskModal} handler={()=>handleOpenDeskModal()}
       >
-        <DialogHeader>Generate Agency Desk Officer</DialogHeader>
+        <DialogHeader>Generate Agency Desk Officer for {agency.abbreviation}</DialogHeader>
         <DialogBody>
-          <div className="space-y-6">
+        <div className="space-y-6">
             <div>
               <div className="flex gap-2 items-center">
-                <Input
+                {/* <Input
                   label="Search Agency"
                   type="text"
                   value={agency.name}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                /> */}
+                
+                <Input
+                  label="Email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
-           
-              <h2>{agency.name}</h2>
-
+                 {/* State Dropdown */}
+        <div>
           
+          <select            id="stateId"
+            name="stateId"
+            value={stateId}
+            onChange={(e)=>setStateId(e.target.value)}
+          >
+            <option value="" className='w-full'>Select a state</option>
+            {states.map((state) => (
+              <option key={state.id} value={state.id}>
+                {state.name}
+              </option>
+            ))}
+          </select>
+        </div>
+              </div>
+
+     
             </div>
-          </div>
           </div>
         </DialogBody>
         <DialogFooter className='flex space-x-2'>
-          <Button onClick={() => props.setOpenModal(undefined)}>
+          <Button onClick={() => generateDeskUrl()}>
             Send Link
           </Button>
           <Button color="gray" onClick={() => propDesk.setOpenAddDeskModal(undefined)}>
