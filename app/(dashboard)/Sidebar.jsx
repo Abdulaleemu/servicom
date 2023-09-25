@@ -69,17 +69,17 @@ export default function MultiLevelSidebar() {
           </ListItemPrefix>
          Agencies
         </ListItem>
-        <ListItem onClick={()=>router.push(`/outlets`)}>
+        {/* <ListItem onClick={()=>router.push(`/outlets`)}>
           <ListItemPrefix>
             <BuildingOffice2Icon className="h-5 w-5" />
           </ListItemPrefix>
          Outlets
-        </ListItem>
+        </ListItem> */}
         <ListItem onClick={()=>router.push(`/complaints`)}>
           <ListItemPrefix>
             <FlagIcon className="h-5 w-5" />
           </ListItemPrefix>
-          Complaints
+          Feedbacks
         </ListItem>
    
       </List>

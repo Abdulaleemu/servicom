@@ -4,11 +4,12 @@ import {
   ArrowUpCircleIcon,
   ArrowDownCircleIcon,
 } from "@heroicons/react/24/solid";
-import { Rating, Typography } from "@material-tailwind/react";
+import { Rating, Typography, Progress } from "@material-tailwind/react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 export default function ChartAndMore({
+  reportTagData,
   topRated,
   bottomRated,
   reports,
@@ -50,8 +51,55 @@ export default function ChartAndMore({
         <div className=" w-full h-3/5 flex items-center justify-center  bg-white ">
           <Doughnut data={chartData} />
         </div>
-        <div className="w-full h-full border bg-white mt-8 p-4">
+        <div className="w-full h-[22rem] border bg-white mt-8 p-4">
           <h1 className="font-md text-xl">Report Tag Overview</h1>
+          <div className="w-full h-full flex items-center  ">
+            {reportTagData && (
+              <>
+                <div className="border w-1/5 h-full p-4 flex flex-col">
+                  <Typography color="blue-gray" variant="h6">
+                    Availabiliy
+                  </Typography>
+                  <Typography color="blue-gray" variant="h6">
+                    Bribery
+                  </Typography>
+                  <Typography color="blue-gray" variant="h6">
+                    Delay
+                  </Typography>
+                  <Typography color="blue-gray" variant="h6">
+                    Rude Staff
+                  </Typography>
+                </div>
+                <div className="border w-3/5 h-full p-4 flex flex-col space-y-4">
+                  <Typography color="blue-gray" variant="h6">
+                    <Progress value={reportTagData.availabilityCount} />
+                  </Typography>
+                  <Typography color="blue-gray" variant="h6">
+                    <Progress value={reportTagData?.briberyCount} />
+                  </Typography>
+                  <Typography color="blue-gray" variant="h6">
+                    <Progress value={reportTagData?.delayCount} />
+                  </Typography>
+                  <Typography color="blue-gray" variant="h6">
+                    <Progress value={reportTagData?.rudeStaffCount} />
+                  </Typography>
+                  <div className="w-full flex items-center justify-between text-xs ">
+                    <h1>0</h1>
+                    <h1>10</h1>
+                    <h1>20</h1>
+                    <h1>30</h1>
+                    <h1>40</h1>
+                    <h1>50</h1>
+                    <h1>60</h1>
+                    <h1>70</h1>
+                    <h1>80</h1>
+                    <h1>90</h1>
+                    <h1>100</h1>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
       {/* top and least rating */}

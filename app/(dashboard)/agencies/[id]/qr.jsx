@@ -26,11 +26,10 @@ function QrCodeDownload({id}) {
 
   const handleDownloadClick = () => {
     if (downloadUrl) {
-      // Create a temporary anchor element
+      
       const a = document.createElement('a');
       a.href = downloadUrl;
 
-      // Check for the Content-Disposition header in response headers
       const contentDisposition = xhr.getResponseHeader('content-disposition');
       if (contentDisposition) {
         const matches = contentDisposition.match(/filename=([^;]+)/);
@@ -53,10 +52,11 @@ function QrCodeDownload({id}) {
   return (
     <div>
       {downloadUrl ? (
-        <div>
+        <div className='flex justify-center'>
           <Image src={downloadUrl} alt="QR Code" height={300} width={300} />
-          <button onClick={handleDownloadClick}>Download QR Code</button>
+          {/* <button onClick={()=>handleDownloadClick}>Download QR Code</button> */}
         </div>
+       
       ) : (
         <p>Loading QR Code...</p>
       )}

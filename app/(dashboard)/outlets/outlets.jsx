@@ -35,7 +35,7 @@ import { toast } from 'react-toastify';
  
 
 export default function Outlets() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
  const params = useSearchParams()
   const handleOpen = () => setOpen(!open);
 
@@ -89,14 +89,14 @@ fetch(`${process.env.NEXT_BASEURL}Outlet`, requestOptions)
   })
   .then((responseData) => {
     console.log('API response:', responseData);
-    // You can handle the API response here
+   
   })
   .catch((error) => {
     console.error('Error:', error);
     // Handle errors here
   });
 
-  setOpen(!open)
+ 
 }
 
 
@@ -148,7 +148,7 @@ fetch(`${process.env.NEXT_BASEURL}Outlet`, requestOptions)
             draggable: true,
           });
 
-          setOpen(!open)
+        
         }
         return response.json();
       })
@@ -162,7 +162,10 @@ fetch(`${process.env.NEXT_BASEURL}Outlet`, requestOptions)
           pauseOnHover: true,
           draggable: true,
         });
+        setOpen(!open)
+        router.refresh()
       })
+     
       .catch((error) => {
         console.error('Error:', error);
         // Handle errors here

@@ -30,6 +30,7 @@ async function fetchDataWithToken(token) {
       throw new Error("Network response was not ok");
     }
     return await response.json();
+
   } catch (error) {
     console.error("There was a problem with the fetch operation:", error);
     throw error;
@@ -56,11 +57,12 @@ export default function Dashboard() {
         console.error("Error:", error);
       });
   }, []);
+console.log('from data', data)
 
   if(!data){
     return <Loading/>
   }
-  return (<div className='w-full md:w-[calc(100vw-20rem)] flex-col h-[calc(100vh-22rem)] rounded-md absolute top-[9rem] md:ml-[20rem] '>
+  return (<div className='w-full md:w-[calc(100vw-20rem)] flex-col h-[calc(100vh-10rem)] rounded-md absolute top-[9rem] md:ml-[20rem] overflow-y-auto  no-scrollbar '>
     <div className='w-full md:w-[calc(100vw-20rem)] flex  h-[10rem] rounded-md relative bg-white'>
      <div className='mr-auto ml-auto mt-auto mb-auto flex flex-row space-x-2 items-start justify-around w-2/3 '>
         <StatsItem title='Total Reports' reports={data?.totalReports}/>
@@ -72,7 +74,7 @@ export default function Dashboard() {
     <div className='bg-white mt-4 h-full'>
   
    
-   <ChartAndMore topRated={data?.topRatedAgencies} bottomRated={data?.bottomRatedAgencies} reports={data?.totalReports} resolved={data?.resolvedReports} unresolved={data?.unResolvedReports}/> 
+   <ChartAndMore topRated={data?.topRatedAgencies} bottomRated={data?.bottomRatedAgencies} reports={data?.totalReports} resolved={data?.resolvedReports} unresolved={data?.unResolvedReports} reportTagData={data?.reportTagData}/> 
   
      
     </div>

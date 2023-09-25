@@ -194,7 +194,7 @@ const generateAdminUrl = async () => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      console.log('from qr', response);
+      // console.log('from qr', response);
       return response.blob() // Get the response as a Blob (file)
         ;
     } catch (error) {
@@ -430,7 +430,7 @@ const generateAdminUrl = async () => {
      {/* qrmodal  */}
 
       <Dialog open={openQr} handler={handleQrModel}>
-        <DialogHeader>Its a simple dialog.</DialogHeader>
+        <DialogHeader>Agency Qr Code</DialogHeader>
         <DialogBody divider>
        < QrCodeDownload id={agency.id}/>
         </DialogBody>
@@ -444,7 +444,7 @@ const generateAdminUrl = async () => {
             <span>Cancel</span>
           </Button>
           <Button variant="gradient" color="green" onClick={()=>setOpenQr(!openQr)}>
-            <span>Confirm</span>
+            <span>Download</span>
           </Button>
         </DialogFooter>
       </Dialog>

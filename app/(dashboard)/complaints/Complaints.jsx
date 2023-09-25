@@ -4,11 +4,14 @@ import axios from "axios";
 import Link from "next/link";
 import Loading from '../../../components/Loading'
 import Main from '../Main'
+
+import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import {
     Card,
     CardHeader,
-    Input,
+    IconButton, 
     Typography,
+    Input,
     Button,
     CardBody,
     Chip,
@@ -17,7 +20,6 @@ import {
     TabsHeader,
     Tab,
     Avatar,
-    IconButton,
     Tooltip,
     Select,
     Option,
@@ -25,6 +27,7 @@ import {
 import jwtDecode from "jwt-decode";
 import { useParams, useRouter } from "next/navigation";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import Pagination from '../../../components/pagination'
 
 const TABS = [
 
@@ -55,7 +58,9 @@ const Complaints = () => {
   const id = params.id;
   const [agencies, setAgencies] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(null);
+  const [status, setStatus] = useState('')
+  const [role, setRole] = useState('')
   const [filters, setFilters] = useState({
     id: "",
     status: "",
@@ -68,22 +73,17 @@ const Complaints = () => {
     router.push(`/complaints/${id}`)
   }
  
-  const handlePrevious = ()=>{
-            if(currentPage == 1){
-                return null
-            }else if(currentPage > 1){
-                setCurrentPage(currentPage - 1)
-            }
-         
-  }
-
-  const handleNext = ()=>{
-    if(currentPage == totalPages){
-        return null
-    }else if(currentPage < totalPages){
-        setCurrentPage(currentPage + 1)
-    }
-}
+  const next = () => {
+    if (currentPage === totalPages) return;
+ 
+    setCurrentPage(currentPage + 1);
+  };
+ 
+  const prev = () => {
+    if (currentPage === 1) return;
+ 
+    setCurrentPage(currentPage - 1);
+  };
 
   
   const fetchAgencies = async (page) => {
@@ -100,7 +100,8 @@ const Complaints = () => {
         },
       });
       setAgencies(response.data.data);
-      setTotalPages(response.data.data.totalPages);
+      console.log('from complaints',response.data.data)
+      setTotalPages(response.data.totalPages);
       setIsLoading(false);
     } catch (error) {
       console.error("Failed to fetch agencies:", error.message);
@@ -108,22 +109,23 @@ const Complaints = () => {
     }
   };
 
+  console.log('total pages',totalPages)
 
-  const fetchAgenciesByAgencies = async (page) => {
+  const fetchAgenciesByAgencies = async (page,aId) => {
     try {
       setIsLoading(true);
       const { status, agencyName, name, id } = filters;
-      const response = await axios.get(`${process.env.NEXT_BASEURL}Complaint/paged?AgencyId=${decodedToken.AgencyID}`, {
+      const response = await axios.get(`${process.env.NEXT_BASEURL}Complaint/paged?AgencyId=${aId}`, {
         params: {
           PageNumber: page,
           PageSize: 10,
-          status,
+          status: status,
           name,
           agencyName,
         },
       });
       setAgencies(response.data.data);
-      setTotalPages(response.data.data.totalPages);
+      setTotalPages(response.data.totalPages);
       setIsLoading(false);
     } catch (error) {
       console.error("Failed to fetch agencies:", error.message);
@@ -131,18 +133,34 @@ const Complaints = () => {
     }
   };
 
-  
+  const  handleTabClick = (tabValue) => {
+    setStatus(tabValue)
+
+    console.log('status',status)
+     };
+
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    let token = null;
+    if (typeof localStorage !== 'undefined') {
+    token = localStorage.getItem('token');
+  }
+    
     const decodedToken = jwtDecode(token);
     const role = decodedToken.role
-    
-    if (role == "Agency Admin" || 'Desk Officer') {
-        fetchAgenciesByAgencies(currentPage)
-      }else{
+    const id = decodedToken.AgencyID
+  
+    if (role == "Agency Admin") {
+      console.log('role',role)
+      fetchAgenciesByAgencies(currentPage, id)
+    }else if(role == "Desk Officer"){
+      console.log('role',role)
+      fetchAgenciesByAgencies(currentPage, id)
     fetchAgencies(currentPage);
-      }
+    }else if(role == "Administrator"){
+      console.log('role',role)
+    fetchAgencies(currentPage);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, filters]);
 
@@ -157,20 +175,22 @@ const Complaints = () => {
   };
 
 
-  if(!agencies){
+
+  if(agencies.length < 1){
     return <Loading/>
   }
 
+
   return (
-    <Main heading='Complaints'>
+    <Main heading='Feedbacks'>
    
-   <Card className="h-full w-full">
+   <Card className="h-full w-full ">
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row md:gap-0">
           <Tabs value="all" className="w-full md:w-max flex items-center mb-4">
             <TabsHeader>
               {TABS?.map(({ label, value }) => (
-                <Tab key={value} value={value}>
+                <Tab key={value} value={value} onClick={()=> handleTabClick(value)}>
                   &nbsp;&nbsp;{label}&nbsp;&nbsp;
                 </Tab>
               ))}
@@ -196,7 +216,7 @@ const Complaints = () => {
           </div>
         </div>
       </CardHeader>
-      <CardBody className="overflow-scroll px-0">
+      <CardBody className="overflow-scroll  no-scrollbar px-0">
         <table className="mt-4 w-full min-w-max table-auto text-left">
           <thead>
             
@@ -222,7 +242,7 @@ const Complaints = () => {
                     color="blue-gray"
                     className="font-normal leading-none opacity-70"
                   >
-                    Complainer
+                    Name
                   </Typography>
                 </th>
                 <th
@@ -233,7 +253,7 @@ const Complaints = () => {
                     color="blue-gray"
                     className="font-normal leading-none opacity-70"
                   >
-                    Complain
+                    Feedback
                   </Typography>
                 </th>
                 <th
@@ -327,17 +347,29 @@ const Complaints = () => {
         </table>
       </CardBody>
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 h-8">
-        <Typography variant="small" color="blue-gray" className="font-normal">
-          Page {currentPage >= 1 && currentPage} of {totalPages >= 1 && totalPages}
-        </Typography>
-        <div className="flex gap-2">
-          <Button variant="outlined" size="sm" onClick={()=>handlePrevious}>
-            Previous
-          </Button>
-          <Button variant="outlined" size="sm" onClick={()=>handleNext}>
-            Next
-          </Button>
-        </div>
+       {/* pagination  */}
+       <div className="flex items-center gap-8">
+      <IconButton
+        size="sm"
+        variant="outlined"
+        onClick={prev}
+        disabled={currentPage === 1}
+      >
+        <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" />
+      </IconButton>
+      <Typography color="gray" className="font-normal">
+        Page <strong className="text-gray-900">{currentPage}</strong> of{" "}
+        <strong className="text-gray-900">{totalPages}</strong>
+      </Typography>
+      <IconButton
+        size="sm"
+        variant="outlined"
+        onClick={next}
+        disabled={currentPage === totalPages}
+      >
+        <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
+      </IconButton>
+    </div>
       </CardFooter>
     </Card>
     </Main>
