@@ -431,7 +431,7 @@ if(!agencies){
                  
                 );
               },
-            ) : <Main><tr><td><h1 className='text-center text-2xl mt-4'>No Outlets Found</h1></td></tr></Main> }
+            ) : <h1 className='text-center text-2xl mt-4'>No Outlets Found</h1> }
           </tbody>
         </table>
       </CardBody>

@@ -171,8 +171,17 @@ const generateDeskUrl = async () => {
     );
    
     console.log('email sent', response);
+    if ((response.data.isSuccessful = true)) {
+      toast.success('Email');
+      setIsLoading(false);
+    }
+  setOpenAddDeskModal(!openAddDeskModal)
   } catch (error) {
     console.error("Failed to fetch agency:", error.message);
+    if ((response.data.isSuccessful = false)) {
+      toast.error(response.data.message);
+      setIsLoading(false);
+    }
   }
 };;
 
