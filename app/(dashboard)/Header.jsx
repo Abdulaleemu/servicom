@@ -19,7 +19,7 @@ const [user, setUser]=useState();
   
   
   return (
-    <div className=' w-full md:w-[calc(100vw-20rem)] h-[7rem]  absolute top-0 right-0 p-4 shadow-sm'>
+    <div className=' w-full md:w-[calc(100vw-20rem)] h-[7rem]  absolute top-0 right-0 p-4 shadow-sm bg-white'>
         <div className='w-full flex items-center justify-between p-2'>
             <h1 className='flex-1 text-2xl p-2 font-sans font-semibold text--800'>Welcome, {user?.FullName}</h1>
          <div className='flex items-center space-x-6'>

@@ -131,39 +131,31 @@ if(!agencies){
 }
   return (
     <Main heading='Agencies'>
-        <Card className="h-full w-full">
-      <CardHeader floated={false} shadow={false} className="rounded-none">
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row md:gap-0">
-          {/* <Tabs value="all" className="w-full md:w-max flex items-center mb-4">
-            <TabsHeader>
-              {TABS.map(({ label, value }) => (
-                <Tab key={value} value={value}>
-                  &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                </Tab>
-              ))}
-            </TabsHeader>
-          </Tabs> */}
-          <div className="w-full md:w-[40vw] mb-4 flex space-x-2">
-            <Input
-              label="Agency Name"
-              value={filters.name}
-             onChange={(e) => handleFilterChange(e, "name")}
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-            />
-              <Input
-              label="Search"
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-            />
-              <Input
-              label="Search"
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-            />
-          </div>
-        </div>
+    <div className="flex flex-col items-center justify-between gap-4 md:flex-row md:gap-0 opacity">
+   <div className="w-full md:w-[40vw]  flex space-x-2 flex-col lg:flex-row items-center">
+     <Input
+       label="Agency Name"
+       value={filters.name}
+      onChange={(e) => handleFilterChange(e, "name")}
+       icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+     />
+       <Input
+       label="Search"
+       icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+     />
+       <Input
+       label="Search"
+       icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+     />
+   </div>
+ </div>
+      <Card className="h-full w-full">
+      <CardHeader floated={true} shadow={false} className="rounded-none">
+ 
       </CardHeader>
-      <CardBody className="overflow-scroll px-0">
-        <table className="mt-4 w-full min-w-max table-auto text-left">
-          <thead>
+      <CardBody className="overflow-scroll no-scrollbar px-0">
+        <table className=" w-full min-w-max table-auto text-left">
+          <thead className='sticky top-0 bg-white'>
             
             <tr>
               
